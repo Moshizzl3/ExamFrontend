@@ -63,6 +63,18 @@ async function createTeamCard(teamList){
 
 }
 
+async function addTeamsToDropDownFilter(){
+  const selectionTeamInput = document.getElementById('teamSelection')
+  const teamList = await getTeams();
+
+  for(let team of teamList){
+    const option = document.createElement('option')
+    option.value = team.teamId
+    option.innerText = team.teamName
+    selectionTeamInput.append(option);
+  }
+}
+
 getTeams().then( teamList =>{
-  createTeamCard(teamList)
+  createTeamCard(teamList).then(addTeamsToDropDownFilter)
 })

@@ -10,6 +10,14 @@ async function getAllRiders() {
 
 }
 
+async function getAllRidersByTeam(id) {
+
+  const ridersList = await fetchOnUrl('http://localhost:8080/api/rider/all-riders-by-team/' + id);
+
+  return ridersList;
+
+}
+
 async function createRiderTable(riderList) {
   const allTeams = await getTeams();
   const tableContainer = document.querySelector('.tableContentContainer');
@@ -210,6 +218,23 @@ async function getTeamsForDropDown(teams, td, id, rider) {
   td.append(select)
 }
 
+function filterOnTeam() {
+  const teamId = document.getElementById('teamSelection').value
+  if (teamId != 0) {
+    getAllRidersByTeam(teamId).then(table => {
+      createRiderTable(table)
+    });
+  } else {
+    getAllRiders().then(table => {
+      createRiderTable(table)
+    });
+
+  }
+
+}
+
+const selector = document.getElementById('teamSelection')
+selector.addEventListener('change', filterOnTeam)
 
 getAllRiders().then(table => {
   createRiderTable(table)
