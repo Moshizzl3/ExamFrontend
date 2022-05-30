@@ -18,7 +18,7 @@ async function createTeamCard(teamList){
 
     const teamCard = document.createElement('div');
     teamCard.setAttribute('id', 'team-'+team.teamId)
-    teamCard.classList.add('container', 'col-md-3', 'h-100');
+    teamCard.classList.add('container', 'col-md-3', 'shadow','teamDivContainer');
     const namePTag = document.createElement('p');
     namePTag.innerText = 'Name: ' + team.teamName;
     teamCard.append(namePTag);

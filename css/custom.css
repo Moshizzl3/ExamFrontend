@@ -1,4 +1,11 @@
 .team-row-div{
   display: flex;
   overflow: auto;
+
+}
+
+.teamDivContainer{
+  border: #0a58ca 1px solid;
+  margin: 2px;
+  height: 300px;
 }

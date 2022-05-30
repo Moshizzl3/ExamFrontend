@@ -13,19 +13,28 @@
 <body>
 
 <div class="mainContainer container vh-100 mt-1">
-¨
+<button onclick="location.href='html/create-new-rider.html'" type="button" class="btn btn-success">Create New Rider</button>
+<button  onclick="location.href='html/create-new-team.html'" type="button" class="btn btn-success">Create New Team</button>
+<br>
+<br>
+
   <div class="contentContainer container h-100 mt-1">
 
-    <div class="teamContainer container h-25 mt-1">
+    <div class="teamContainer container mt-1">
 
       <div class="h-100 mt-1 team-row-div">
       </div>
-
-
-
     </div>
 
-    <div class="tableContainer container h-75 mt-1">
+    <div>
+      <div>
+        <label>Select team: </label>
+        <select id="teamSelection">
+        </select>
+      </div>
+    </div>
+
+    <div class="tableContainer container  mt-1">
 
       <div class="container tableContentContainer shadow min-vh-100 py-2">
 
