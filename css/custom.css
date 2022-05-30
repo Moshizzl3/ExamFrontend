@@ -1,0 +1,4 @@
+.team-row-div{
+  display: flex;
+  overflow: auto;
+}
