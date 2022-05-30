@@ -49,7 +49,7 @@ async function createTeamCard(teamList){
       let trText = rider.riderName;
       trCell.append(trText);
       trCell = trBody.insertCell(1);
-      trText = rider.riderCountry;
+      trText = getTotalScore(rider);
       trCell.append(trText);
     }
 
