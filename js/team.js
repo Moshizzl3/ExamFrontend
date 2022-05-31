@@ -42,7 +42,7 @@ async function createTeamCard(teamList) {
     text = "Score"
     thCell.append(text)
 
-    totalTimeArrayByTeam = [];
+
     await findFastestTime(team);
 
     for (let rider of totalTimeArrayByTeam) {
@@ -67,6 +67,7 @@ async function createTeamCard(teamList) {
 
 async function findFastestTime(team) {
 
+  console.log(team)
   let riderList = await fetchOnUrl('http://localhost:8080/api/rider/all-riders-by-team/' + team.teamId);
 
   for (let rider of riderList) {
@@ -82,7 +83,7 @@ async function findFastestTime(team) {
 
 async function addTeamsToDropDownFilter() {
   const selectionTeamInput = document.getElementById('teamSelection')
-  const teamList = await getTeamsa();
+  const teamList = await getTeams();
 
   for (let team of teamList) {
     const option = document.createElement('option')

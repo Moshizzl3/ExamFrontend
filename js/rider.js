@@ -1,4 +1,4 @@
-const totalTimeArray = [];
+let totalTimeArray = [];
 
 function fetchOnUrl(url) {
   return fetch(url).then(res => res.json())
@@ -11,7 +11,6 @@ async function getAllRiders() {
   return ridersList;
 
 }
-
 
 
 async function getAllRidersByStage(id) {
@@ -28,8 +27,7 @@ async function getAllRidersByTeam(id) {
 
 }
 
-async function createRiderTable(riderList) {
-  const allTeams = await getTeams();
+async function createRiderTable() {
   const tableContainer = document.querySelector('.tableContentContainer');
   tableContainer.innerHTML = "";
   const tableDiv = document.createElement('div');
@@ -47,95 +45,83 @@ async function createRiderTable(riderList) {
   text = "Rider Number"
   thCell.append(text)
   thCell = thRow.insertCell(2)
-  text = "BirthDate"
-  thCell.append(text)
-  thCell = thRow.insertCell(3)
   text = "Country"
   thCell.append(text)
   thRow.append(thCell)
 
-  thCell = thRow.insertCell(4)
+  thCell = thRow.insertCell(3)
   text = "Team"
   thCell.append(text)
   thRow.append(thCell)
 
-  thCell = thRow.insertCell(5)
+  thCell = thRow.insertCell(4)
   text = "Sprint Points"
   thCell.append(text)
   thRow.append(thCell)
 
-  thCell = thRow.insertCell(6)
+  thCell = thRow.insertCell(5)
   text = "Mountain Points"
   thCell.append(text)
   thRow.append(thCell)
   riderTable.append(tableHead)
 
-  thCell = thRow.insertCell(7)
+  thCell = thRow.insertCell(6)
   text = "Total Time"
   thCell.append(text)
   thRow.append(thCell)
   riderTable.append(tableHead)
 
 
-  for (let rider of riderList) {
+  findFastestTime().then(() => {
+    totalTimeArray.sort(function (a, b) {
+      return a.riderTotalTime.localeCompare(b.riderTotalTime);
+    });
+    console.log(totalTimeArray)
+  })
+
+  const riderWinnerYellow = totalTimeArray[0].rider.riderId;
+
+  console.log(riderWinnerYellow)
+  for (let rider of totalTimeArray) {
 
     const trBody = tableBody.insertRow(-1);
-    trBody.setAttribute('data-bs-toggle', 'collapse')
-    trBody.setAttribute('data-bs-target', 'r' + rider.riderId)
     let trCell = trBody.insertCell(0);
-    let trText = rider.riderName;
-    trCell.setAttribute("id", "riderName" + rider.riderId)
-    trCell.setAttribute("contenteditable", "true")
+    let trText = rider.rider.riderName;
     trCell.append(trText);
     trCell = trBody.insertCell(1);
-    trCell.setAttribute("id", "riderNumber" + rider.riderId)
-    trCell.setAttribute("contenteditable", "true")
-    trText = rider.riderNumber;
+    trText = rider.rider.riderNumber;
     trCell.append(trText);
     trCell = trBody.insertCell(2);
-    trCell.setAttribute("id", "riderBirtDate" + rider.riderId)
-    trCell.setAttribute("contenteditable", "true")
-    trCell.setAttribute("type", "calendar")
-    trText = rider.riderBirthDate;
+    trText = rider.rider.riderCountry;
     trCell.append(trText);
     trCell = trBody.insertCell(3);
-    trCell.setAttribute("id", "riderCountry" + rider.riderId)
-    trCell.setAttribute("contenteditable", "true")
-    trText = rider.riderCountry;
+    trText = rider.rider.team.teamName;
     trCell.append(trText);
     trCell = trBody.insertCell(4);
-    await getTeamsForDropDown(allTeams, trCell, "riderTeam" + rider.riderId, rider)
+    trText = getTotalSprintPoints(rider.rider)
+    trCell.append(trText);
     trCell = trBody.insertCell(5);
-    trText = getTotalSprintPoints(rider)
+    trText = getTotalMountainPoints(rider.rider)
     trCell.append(trText);
     trCell = trBody.insertCell(6);
-    trText = getTotalMountainPoints(rider)
+    trText = rider.riderTotalTime;
     trCell.append(trText);
-    trCell = trBody.insertCell(7);
-    trText = addTimes(rider)
-    trCell.append(trText);
-    trCell = trBody.insertCell(8);
-    let deleteButton = document.createElement('button');
-    deleteButton.setAttribute("type", "button")
-    deleteButton.classList.add("btn", "btn-danger")
-    deleteButton.innerText = "Delete"
-    trCell.append(deleteButton);
-    deleteButton.addEventListener('click', () => {
-      deleteRider(rider).then(getAllRiders).then(table => {
-        createRiderTable(table)
-      })
-    })
+    if (rider.rider.riderId == riderWinnerYellow){
+      trCell = trBody.insertCell(7);
+      trText = "winner yellow"
+      trCell.append(trText);
+    }
+    if (rider.rider.riderId == riderWinnerYellow){
+      trCell = trBody.insertCell(7);
+      trText = "winner yellow"
+      trCell.append(trText);
+    }
+    if (rider.rider.riderId == riderWinnerYellow){
+      trCell = trBody.insertCell(7);
+      trText = "winner yellow"
+      trCell.append(trText);
+    }
 
-    let editButton = document.createElement('button');
-    editButton.setAttribute("type", "button")
-    editButton.classList.add("btn", "btn-info")
-    editButton.innerText = "Edit"
-    editButton.addEventListener('click', () => {
-      editRider(rider).then(getAllRiders).then(table => {
-        createRiderTable(table)
-      });
-    })
-    trCell.append(editButton);
 
   }
 
@@ -192,21 +178,13 @@ async function createRiderTableStage(riderList, stageId) {
   for (let rider of riderList) {
 
     const trBody = tableBody.insertRow(-1);
-    trBody.setAttribute('data-bs-toggle', 'collapse')
-    trBody.setAttribute('data-bs-target', 'r' + rider.riderId)
     let trCell = trBody.insertCell(0);
     let trText = rider.riderName;
-    trCell.setAttribute("id", "riderName" + rider.riderId)
-    trCell.setAttribute("contenteditable", "true")
     trCell.append(trText);
     trCell = trBody.insertCell(1);
-    trCell.setAttribute("id", "riderNumber" + rider.riderId)
-    trCell.setAttribute("contenteditable", "true")
     trText = rider.riderNumber;
     trCell.append(trText);
     trCell = trBody.insertCell(2);
-    trCell.setAttribute("id", "riderCountry" + rider.riderId)
-    trCell.setAttribute("contenteditable", "true")
     trText = rider.riderCountry;
     trCell.append(trText);
     trCell = trBody.insertCell(3);
@@ -222,27 +200,6 @@ async function createRiderTableStage(riderList, stageId) {
     trText = rider.resultList[stageId - 1].time
     trCell.append(trText);
     trCell = trBody.insertCell(7);
-    let deleteButton = document.createElement('button');
-    deleteButton.setAttribute("type", "button")
-    deleteButton.classList.add("btn", "btn-danger")
-    deleteButton.innerText = "Delete"
-    trCell.append(deleteButton);
-    deleteButton.addEventListener('click', () => {
-      deleteRider(rider).then(getAllRiders).then(table => {
-        createRiderTable(table)
-      })
-    })
-
-    let editButton = document.createElement('button');
-    editButton.setAttribute("type", "button")
-    editButton.classList.add("btn", "btn-info")
-    editButton.innerText = "Edit"
-    editButton.addEventListener('click', () => {
-      editRider(rider).then(getAllRiders).then(table => {
-        createRiderTable(table)
-      });
-    })
-    trCell.append(editButton);
 
   }
 
@@ -321,6 +278,12 @@ function getTotalMountainPoints(rider) {
   }
 }
 
+function checkYellowShirt(rider){
+  if (rider){
+
+  }
+}
+
 
 async function deleteRider(rider) {
   const urlDelete = 'http://localhost:8080/api/rider/' + rider.riderId;
@@ -393,36 +356,16 @@ async function editRider(rider) {
   await updateRider(rider)
 }
 
-async function getTeamsForDropDown(teams, td, id, rider) {
-
-  const select = document.createElement('select')
-  select.setAttribute('id', id)
-
-  const defaultOption = document.createElement('option');
-  defaultOption.selected = true;
-  defaultOption.innerText = rider.team.teamName;
-  select.append(defaultOption)
-
-
-  for (let team of teams) {
-    if (defaultOption.innerText != team.teamName) {
-      const option = document.createElement('option');
-      option.innerText = team.teamName;
-      select.append(option);
-    }
-  }
-  td.append(select)
-}
-
 function filterOnTeam() {
   const teamId = document.getElementById('teamSelection').value
+  console.log(teamId)
   if (teamId != 0) {
     getAllRidersByTeam(teamId).then(table => {
-      createRiderTable(table)
+       createRiderTable(table)
     });
   } else {
-    getAllRiders().then(table => {
-      createRiderTable(table)
+    getAllRiders().then( table => {
+       createRiderTable(table)
     });
 
   }
@@ -431,12 +374,12 @@ function filterOnTeam() {
 function chooseTableBasedOnInput() {
   const stageId = document.getElementById('stageSelection').value;
   if (stageId == 0) {
-    getAllRiders().then(table => {
-      createRiderTable(table)
+    getAllRiders().then(async table => {
+      await createRiderTable(table)
     });
   } else {
-    getAllRidersByStage(stageId).then(table => {
-      createRiderTableStage(table, stageId)
+    getAllRidersByStage(stageId).then(async table => {
+      await createRiderTableStage(table, stageId)
     });
   }
 }
@@ -445,6 +388,8 @@ const stageSelector = document.getElementById('stageSelection');
 stageSelector.addEventListener('change', chooseTableBasedOnInput)
 
 const selector = document.getElementById('teamSelection')
-selector.addEventListener('change', filterOnTeam)
+selector.addEventListener('change', ()=>{
+  filterOnTeam();
+})
 
 chooseTableBasedOnInput();
