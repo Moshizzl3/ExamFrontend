@@ -42,8 +42,13 @@ async function createTeamCard(teamList) {
     text = "Score"
     thCell.append(text)
 
-
+    totalTimeArrayByTeam = [];
     await findFastestTime(team);
+
+    totalTimeArrayByTeam.sort(function (a, b) {
+      return a.riderTotalTime.localeCompare(b.riderTotalTime);
+    });
+
 
     for (let rider of totalTimeArrayByTeam) {
 
@@ -80,19 +85,6 @@ async function findFastestTime(team) {
 
 }
 
-
-async function addTeamsToDropDownFilter() {
-  const selectionTeamInput = document.getElementById('teamSelection')
-  const teamList = await getTeams();
-
-  for (let team of teamList) {
-    const option = document.createElement('option')
-    option.value = team.teamId
-    option.innerText = team.teamName
-    selectionTeamInput.append(option);
-  }
-}
-
-getTeams().then(teamList => {
-  createTeamCard(teamList).then(addTeamsToDropDownFilter)
+getTeams().then(async teamList => {
+  await createTeamCard(teamList)
 })

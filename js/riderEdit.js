@@ -185,8 +185,8 @@ async function editRider(rider) {
 
 async function addTeamsToDropDownFilter() {
   const selectionTeamInput = document.getElementById('teamSelection')
-  const teamList = await getTeams();
 
+  const teamList = await getTeams();
   for (let team of teamList) {
     const option = document.createElement('option')
     option.value = team.teamId
@@ -219,8 +219,10 @@ async function getTeamsForDropDown(teams, td, id, rider) {
 
 
 async function filterOnTeam() {
-  await addTeamsToDropDownFilter()
+
   const teamId = document.getElementById('teamSelection').value
+
+
   if (teamId != 0) {
     getAllRidersByTeam(teamId).then(table => {
       createRiderTable(table)
@@ -232,6 +234,7 @@ async function filterOnTeam() {
 
   }
 }
+addTeamsToDropDownFilter();
 filterOnTeam().then(createRiderTable)
 const selector = document.getElementById('teamSelection')
 selector.addEventListener('change', filterOnTeam)

@@ -7,5 +7,10 @@
 .teamDivContainer{
   border: #0a58ca 1px solid;
   margin: 2px;
-  height: 300px;
+  height: 350px;
+}
+
+.img-shirts{
+  height: 30px;
+  width: 40px;
 }

@@ -1,4 +1,8 @@
 let totalTimeArray = [];
+let totalMountainArray = [];
+let totalSprintArray = []
+let totalTimeArrayBelow26 = []
+
 
 function fetchOnUrl(url) {
   return fetch(url).then(res => res.json())
@@ -19,14 +23,6 @@ async function getAllRidersByStage(id) {
   return ridersList;
 }
 
-async function getAllRidersByTeam(id) {
-
-  const ridersList = await fetchOnUrl('http://localhost:8080/api/rider/all-riders-by-team/' + id);
-
-  return ridersList;
-
-}
-
 async function createRiderTable() {
   const tableContainer = document.querySelector('.tableContentContainer');
   tableContainer.innerHTML = "";
@@ -35,7 +31,8 @@ async function createRiderTable() {
   const riderTable = document.createElement('table')
   riderTable.classList.add('table', 'accordion')
   const tableHead = document.createElement('thead');
-  const tableBody = document.createElement('tbody')
+  const tableBody =
+    document.createElement('tbody')
 
   const thRow = tableHead.insertRow(-1);
   let thCell = thRow.insertCell(0);
@@ -71,15 +68,41 @@ async function createRiderTable() {
   thRow.append(thCell)
   riderTable.append(tableHead)
 
+  totalTimeArray = [];
+  await findFastestTime1();
+  totalTimeArray.sort(function (a, b) {
+    return a.riderTotalTime.localeCompare(b.riderTotalTime);
+  });
+  console.log(totalTimeArray)
 
-  findFastestTime().then(() => {
-    totalTimeArray.sort(function (a, b) {
-      return a.riderTotalTime.localeCompare(b.riderTotalTime);
+
+  findHighestPointsMountain().then(() => {
+    totalMountainArray.sort(function (a, b) {
+      return b.riderTotalPoints - a.riderTotalPoints;
     });
-    console.log(totalTimeArray)
+    console.log(totalMountainArray)
   })
 
+  findHighestPointsSprint().then(() => {
+    totalSprintArray.sort(function (a, b) {
+      return b.riderTotalPoints - a.riderTotalPoints;
+    });
+    console.log(totalSprintArray)
+  })
+
+  findFastestTimeBelow26().then(() => {
+    totalTimeArrayBelow26.sort(function (a, b) {
+      return a.riderTotalTime.localeCompare(b.riderTotalTime);
+    });
+  })
+
+
   const riderWinnerYellow = totalTimeArray[0].rider.riderId;
+  const riderWinnerMountain = totalMountainArray[0].rider.riderId;
+  const riderWinnerSprint = totalSprintArray[0].rider.riderId;
+  const riderWinnerWhite = totalSprintArray[0].rider.riderId;
+
+  console.log(riderWinnerMountain)
 
   console.log(riderWinnerYellow)
   for (let rider of totalTimeArray) {
@@ -106,20 +129,34 @@ async function createRiderTable() {
     trCell = trBody.insertCell(6);
     trText = rider.riderTotalTime;
     trCell.append(trText);
-    if (rider.rider.riderId == riderWinnerYellow){
+    if (rider.rider.riderId == riderWinnerYellow) {
       trCell = trBody.insertCell(7);
-      trText = "winner yellow"
-      trCell.append(trText);
+      const img = document.createElement('img')
+      img.classList.add('img-shirts')
+      img.src = "../img/yellowShirt.png"
+      trCell.append(img);
     }
-    if (rider.rider.riderId == riderWinnerYellow){
+    if (rider.rider.riderId == riderWinnerMountain) {
       trCell = trBody.insertCell(7);
-      trText = "winner yellow"
-      trCell.append(trText);
+      const img = document.createElement('img')
+      img.classList.add('img-shirts')
+      img.src = "../img/bjergShirt.png"
+      trCell.append(img);
     }
-    if (rider.rider.riderId == riderWinnerYellow){
+    if (rider.rider.riderId == riderWinnerSprint) {
       trCell = trBody.insertCell(7);
-      trText = "winner yellow"
-      trCell.append(trText);
+      const img = document.createElement('img')
+      img.classList.add('img-shirts')
+      img.src = "../img/greenShirt.png"
+      trCell.append(img);
+    }
+
+    if (rider.rider.riderId == riderWinnerWhite) {
+      trCell = trBody.insertCell(7);
+      const img = document.createElement('img')
+      img.classList.add('img-shirts')
+      img.src = "../img/whiteShirt.png"
+      trCell.append(img);
     }
 
 
@@ -242,7 +279,7 @@ function addTimes(rider) {
   return z(hours) + ':' + z(minutes) + ':' + z(seconds)
 }
 
-async function findFastestTime() {
+async function findFastestTime1() {
 
   let riderList = await getAllRiders();
 
@@ -256,7 +293,61 @@ async function findFastestTime() {
 
 }
 
-findFastestTime().then(() => {
+async function findFastestTimeBelow26() {
+
+  let riderList = await getAllRiders();
+
+  for (let rider of riderList) {
+    console.log(rider)
+    if (checkAge(rider.riderBirthDate)) {
+      const riderResult = {
+        rider: rider,
+        riderTotalTime: addTimes(rider)
+      }
+      totalTimeArrayBelow26.push(riderResult)
+    }
+  }
+
+}
+
+
+function checkAge(birthdate) {
+  const ageInMilliseconds = new Date() - new Date(birthdate);
+  const age = Math.floor(ageInMilliseconds / 1000 / 60 / 60 / 24 / 365);
+  return age < 26;
+}
+
+
+async function findHighestPointsMountain() {
+
+  let riderList = await getAllRiders();
+
+  for (let rider of riderList) {
+    const riderResult = {
+      rider: rider,
+      riderTotalPoints: getTotalMountainPoints(rider)
+    }
+    totalMountainArray.push(riderResult)
+  }
+
+}
+
+async function findHighestPointsSprint() {
+
+  let riderList = await getAllRiders();
+
+  for (let rider of riderList) {
+    const riderResult = {
+      rider: rider,
+      riderTotalPoints: getTotalSprintPoints(rider)
+    }
+    totalSprintArray.push(riderResult)
+  }
+
+}
+
+
+findFastestTime1().then(() => {
   totalTimeArray.sort(function (a, b) {
     return a.riderTotalTime.localeCompare(b.riderTotalTime);
   });
@@ -278,118 +369,19 @@ function getTotalMountainPoints(rider) {
   }
 }
 
-function checkYellowShirt(rider){
-  if (rider){
-
-  }
-}
-
-
-async function deleteRider(rider) {
-  const urlDelete = 'http://localhost:8080/api/rider/' + rider.riderId;
-
-  const fetchOption = {
-    method: "DELETE",
-    headers: {
-      "Content-type": "application/json"
-    },
-    body: ""
-  }
-
-  const jsonString = JSON.stringify(rider);
-  fetchOption.body = jsonString;
-
-  const response = await fetch(urlDelete, fetchOption);
-  if (!response.ok) {
-  }
-  return response;
-}
-
-async function updateRider(rider) {
-  const urlUpdate = 'http://localhost:8080/api/rider/' + rider.riderId;
-
-  const fetchOption = {
-    method: "PUT",
-    headers: {
-      "Content-type": "application/json"
-    },
-    body: ""
-  }
-
-  const jsonString = JSON.stringify(rider);
-  fetchOption.body = jsonString;
-
-  //call backend and wait for response
-  const response = await fetch(urlUpdate, fetchOption);
-  if (!response.ok) {
-  }
-  return response;
-}
-
-async function editRider(rider) {
-
-  const riderName = document.getElementById("riderName" + rider.riderId).innerText;
-  const riderNumber = document.getElementById("riderNumber" + rider.riderId).innerText;
-  const riderBirthDate = document.getElementById("riderBirtDate" + rider.riderId).innerText;
-  const riderCountry = document.getElementById("riderCountry" + rider.riderId).innerText;
-  const riderTeam = document.getElementById("riderTeam" + rider.riderId);
-  const value = riderTeam.options[riderTeam.selectedIndex].value;
-  console.log(value)
-
-  const team = await getTeams();
-
-  rider = {
-    riderId: rider.riderId,
-    riderName: riderName,
-    riderNumber: riderNumber,
-    riderBirthDate: riderBirthDate,
-    riderCountry: riderCountry,
-    team: team.find(t => t.teamName == value),
-    resultList: [{
-      stage: rider.resultList.stage,
-      resultId: 1,
-      mountainPoint: 1,
-      sprintPoint: 2
-    }]
-  }
-  console.log(rider)
-  await updateRider(rider)
-}
-
-function filterOnTeam() {
-  const teamId = document.getElementById('teamSelection').value
-  console.log(teamId)
-  if (teamId != 0) {
-    getAllRidersByTeam(teamId).then(table => {
-       createRiderTable(table)
-    });
-  } else {
-    getAllRiders().then( table => {
-       createRiderTable(table)
-    });
-
-  }
-}
-
-function chooseTableBasedOnInput() {
+async function chooseTableBasedOnInput() {
   const stageId = document.getElementById('stageSelection').value;
   if (stageId == 0) {
-    getAllRiders().then(async table => {
-      await createRiderTable(table)
-    });
+    await createRiderTable()
   } else {
-    getAllRidersByStage(stageId).then(async table => {
-      await createRiderTableStage(table, stageId)
+    getAllRidersByStage(stageId).then(table => {
+      createRiderTableStage(table, stageId)
     });
   }
 }
 
 const stageSelector = document.getElementById('stageSelection');
-stageSelector.addEventListener('change', chooseTableBasedOnInput)
+stageSelector.addEventListener('change', async () => await chooseTableBasedOnInput())
 
-const selector = document.getElementById('teamSelection')
-selector.addEventListener('change', ()=>{
-  filterOnTeam();
-})
 
 chooseTableBasedOnInput();
