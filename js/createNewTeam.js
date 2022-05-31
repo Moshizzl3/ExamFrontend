@@ -12,7 +12,6 @@ async function createNewTeam() {
     teamCountry: document.getElementById('inputCountry').value,
   }
 
-  console.log(body)
 
 
   const fetchOptions = {

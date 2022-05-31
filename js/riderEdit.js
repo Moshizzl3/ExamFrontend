@@ -166,7 +166,6 @@ async function editRider(rider) {
   const riderCountry = document.getElementById("riderCountry" + rider.riderId).innerText;
   const riderTeam = document.getElementById("riderTeam" + rider.riderId);
   const value = riderTeam.options[riderTeam.selectedIndex].value;
-  console.log(value)
 
   const team = await getTeams();
 
@@ -179,7 +178,6 @@ async function editRider(rider) {
     team: team.find(t => t.teamName == value),
     resultList: rider.resultList
   }
-  console.log(rider)
   await updateRider(rider)
 }
 

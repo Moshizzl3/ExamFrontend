@@ -17,8 +17,6 @@ async function createNewRider() {
     }
   }
 
-  console.log(body)
-
   const fetchOptions = {
     method: "Post",
     headers: {
@@ -27,10 +25,7 @@ async function createNewRider() {
     body: JSON.stringify(body)
   }
 
-  //calls backend and wait for return
   const response = await fetch(postRiderUrl, fetchOptions);
-
-  console.log(response)
 
   if (!response.ok) {
     alert("something went wrong, please try again")

@@ -72,7 +72,6 @@ async function createTeamCard(teamList) {
 
 async function findFastestTime(team) {
 
-  console.log(team)
   let riderList = await fetchOnUrl('http://localhost:8080/api/rider/all-riders-by-team/' + team.teamId);
 
   for (let rider of riderList) {

@@ -73,21 +73,20 @@ async function createRiderTable() {
   totalTimeArray.sort(function (a, b) {
     return a.riderTotalTime.localeCompare(b.riderTotalTime);
   });
-  console.log(totalTimeArray)
 
 
   findHighestPointsMountain().then(() => {
     totalMountainArray.sort(function (a, b) {
       return b.riderTotalPoints - a.riderTotalPoints;
     });
-    console.log(totalMountainArray)
+
   })
 
   findHighestPointsSprint().then(() => {
     totalSprintArray.sort(function (a, b) {
       return b.riderTotalPoints - a.riderTotalPoints;
     });
-    console.log(totalSprintArray)
+
   })
 
   findFastestTimeBelow26().then(() => {
@@ -96,15 +95,11 @@ async function createRiderTable() {
     });
   })
 
-
   const riderWinnerYellow = totalTimeArray[0].rider.riderId;
   const riderWinnerMountain = totalMountainArray[0].rider.riderId;
   const riderWinnerSprint = totalSprintArray[0].rider.riderId;
   const riderWinnerWhite = totalSprintArray[0].rider.riderId;
 
-  console.log(riderWinnerMountain)
-
-  console.log(riderWinnerYellow)
   for (let rider of totalTimeArray) {
 
     const trBody = tableBody.insertRow(-1);
@@ -298,7 +293,6 @@ async function findFastestTimeBelow26() {
   let riderList = await getAllRiders();
 
   for (let rider of riderList) {
-    console.log(rider)
     if (checkAge(rider.riderBirthDate)) {
       const riderResult = {
         rider: rider,
@@ -351,7 +345,7 @@ findFastestTime1().then(() => {
   totalTimeArray.sort(function (a, b) {
     return a.riderTotalTime.localeCompare(b.riderTotalTime);
   });
-  console.log(totalTimeArray)
+
 })
 
 
