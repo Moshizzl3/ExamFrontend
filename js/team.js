@@ -1,3 +1,5 @@
+let totalTimeArrayByTeam = [];
+
 function fetchOnUrl(url) {
   return fetch(url).then(res => res.json())
 }
@@ -10,15 +12,15 @@ async function getTeams() {
 
 }
 
-async function createTeamCard(teamList){
+async function createTeamCard(teamList) {
 
   const teamContainer = document.querySelector('.team-row-div')
 
   for (const team of teamList) {
 
     const teamCard = document.createElement('div');
-    teamCard.setAttribute('id', 'team-'+team.teamId)
-    teamCard.classList.add('container', 'col-md-3', 'shadow','teamDivContainer');
+    teamCard.setAttribute('id', 'team-' + team.teamId)
+    teamCard.classList.add('container', 'col-md-3', 'shadow', 'teamDivContainer');
     const namePTag = document.createElement('p');
     namePTag.innerText = 'Name: ' + team.teamName;
     teamCard.append(namePTag);
@@ -40,16 +42,17 @@ async function createTeamCard(teamList){
     text = "Score"
     thCell.append(text)
 
-    const riderList = await fetchOnUrl('http://localhost:8080/api/rider/all-riders-by-team/' + team.teamId);
+    totalTimeArrayByTeam = [];
+    await findFastestTime(team);
 
-    for (let rider of riderList) {
+    for (let rider of totalTimeArrayByTeam) {
 
       const trBody = tableTeamBody.insertRow(-1);
       let trCell = trBody.insertCell(0);
-      let trText = rider.riderName;
+      let trText = rider.rider.riderName;
       trCell.append(trText);
       trCell = trBody.insertCell(1);
-      trText = getTotalScore(rider);
+      trText = rider.riderTotalTime;
       trCell.append(trText);
     }
 
@@ -60,14 +63,28 @@ async function createTeamCard(teamList){
 
     teamContainer.append(teamCard)
   }
+}
+
+async function findFastestTime(team) {
+
+  let riderList = await fetchOnUrl('http://localhost:8080/api/rider/all-riders-by-team/' + team.teamId);
+
+  for (let rider of riderList) {
+    const riderResult = {
+      rider: rider,
+      riderTotalTime: addTimes(rider)
+    }
+    totalTimeArrayByTeam.push(riderResult)
+  }
 
 }
 
-async function addTeamsToDropDownFilter(){
-  const selectionTeamInput = document.getElementById('teamSelection')
-  const teamList = await getTeams();
 
-  for(let team of teamList){
+async function addTeamsToDropDownFilter() {
+  const selectionTeamInput = document.getElementById('teamSelection')
+  const teamList = await getTeamsa();
+
+  for (let team of teamList) {
     const option = document.createElement('option')
     option.value = team.teamId
     option.innerText = team.teamName
@@ -75,6 +92,6 @@ async function addTeamsToDropDownFilter(){
   }
 }
 
-getTeams().then( teamList =>{
+getTeams().then(teamList => {
   createTeamCard(teamList).then(addTeamsToDropDownFilter)
 })
